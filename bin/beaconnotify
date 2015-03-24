@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+
+var argv = require('minimist')(process.argv.slice(2), {
+  boolean: ['sandbox'],
+});
+
+if(!('BEACON_USERNAME' in process.env)) {
+  console.error("Must set BEACON_USERNAME");
+  process.exit(1);
+}
+if(!('BEACON_PASSWORD' in process.env)) {
+  console.error("Must set BEACON_PASSWORD");
+  process.exit(1);
+}
+var username = process.env.BEACON_USERNAME;
+var password = process.env.BEACON_PASSWORD;
+var contactGroup = argv._[0];
+var message = argv._.slice(1).join(' ');
+
+send_message = require('../lib/index.js');
+
+send_message({
+  sandbox: 'sandbox' in argv && argv.sandbox,
+  username: username,
+  password: password,
+  message: message,
+  contactGroup: contactGroup
+}, function(error) {
+  if(error) {
+    console.error("Failed to send message: " + error);
+    process.exit(1);
+    return;
+  }
+  process.exit();
+});
